@@ -3,8 +3,12 @@ from django.db import models  # noqa F401
 
 class Pokemon(models.Model):
     title = models.CharField(max_length=100, verbose_name='Название покемона')
-    image = models.ImageField(upload_to='image/%m/%d', null=True, blank=True, verbose_name='Изображение')
-    description = models.TextField(verbose_name='Описание',default='покемон с описанием', blank=True)
+    title_en = models.CharField(max_length=100, null=True, blank=True, verbose_name='Английское название')
+    title_jap = models.CharField(max_length=100, null=True, blank=True, verbose_name='Японское название')
+    image = models.ImageField(upload_to='image/%m/%d', verbose_name='Изображение')
+    description = models.TextField(verbose_name='Описание', default='описание покемона', blank=True)
+    previous_evolution = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True,
+                                           related_name='next_evolutions', verbose_name='Предыдущая версия покемона')
 
     def __str__(self):
         return self.title
@@ -17,7 +21,8 @@ class Pokemon(models.Model):
 class PokemonEntity(models.Model):
     lon = models.FloatField(verbose_name='Долгота')
     lat = models.FloatField(verbose_name='Широта')
-    pokemon = models.ForeignKey(Pokemon, on_delete=models.CASCADE, default=1, verbose_name='Покемон')
+    pokemon = models.ForeignKey(Pokemon, on_delete=models.CASCADE, default=1, verbose_name='Покемон',
+                                related_name='pokemon_enities')
     appeared_at = models.DateTimeField(null=True, verbose_name='Время появления',)
     disappeared_at = models.DateTimeField(null=True, blank=True, verbose_name='Время исчезновения')
     level = models.IntegerField(null=True, blank=True, verbose_name='Уровень')
@@ -28,5 +33,9 @@ class PokemonEntity(models.Model):
 
     def __str__(self):
         return f'{self.pokemon}'
+
+    class Meta:
+        verbose_name = 'Сущность покемона'
+        verbose_name_plural = 'Сущность покемонов'
 
 # your models here
