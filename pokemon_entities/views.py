@@ -41,14 +41,14 @@ def show_all_pokemons(request):
 
 
 def show_pokemon(request, pokemon_id):
-    my_pokemon = get_object_or_404(Pokemon, pk=pokemon_id)
+    pokemon = get_object_or_404(Pokemon, pk=pokemon_id)
     folium_map = folium.Map(location=MOSCOW_CENTER, zoom_start=12)
-    for pokemon_entity in PokemonEntity.objects.filter(pokemon_id=my_pokemon.pk, appeared_at__lte=localtime(),
+    for pokemon_entity in PokemonEntity.objects.filter(pokemon_id=pokemon.pk, appeared_at__lte=localtime(),
                                                        disappeared_at__gte=localtime()):
         add_pokemon(
             folium_map, pokemon_entity.lat,
             pokemon_entity.lon,
-            request.build_absolute_uri(my_pokemon.image.url)
+            request.build_absolute_uri(pokemon.image.url)
         )
     serialized_pokemon = {}
     for pokemon in Pokemon.objects.filter(pk=pokemon_id):
@@ -80,9 +80,7 @@ def show_pokemon(request, pokemon_id):
                 'img_url': pokemon.previous_evolution.image.url,
             }
             serialized_pokemon['pokemons'][0]['previous_evolution'] = previous_evolution
-
-    print(serialized_pokemon)
-    pokemon_next = my_pokemon.next_evolutions.all()
+    pokemon_next = pokemon.next_evolutions.all()
     return render(request, 'pokemon.html', context={
-        'map': folium_map._repr_html_(), 'pokemon': my_pokemon, 'pokemon_next': pokemon_next,
+        'map': folium_map._repr_html_(), 'pokemon': pokemon, 'pokemon_next': pokemon_next,
     })
