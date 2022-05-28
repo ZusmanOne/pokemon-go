@@ -13,6 +13,7 @@ class Pokemon(models.Model):
                                            blank=True,
                                            related_name='next_evolutions',
                                            verbose_name='Предыдущая версия покемона')
+    element_type = models.ManyToManyField('PokemonElementType')
 
     class Meta:
         verbose_name = 'Покемон'
@@ -43,3 +44,15 @@ class PokemonEntity(models.Model):
 
     def __str__(self):
         return f'{self.pokemon}'
+
+
+class PokemonElementType(models.Model):
+    title = models.CharField(max_length=100,verbose_name='Стихия')
+
+    class Meta:
+        verbose_name = 'Стихия'
+        verbose_name_plural = 'Стихии'
+
+    def __str__(self):
+        return self.title
+

@@ -11,15 +11,24 @@ DEFAULT_IMAGE_URL = (
 )
 
 
-def add_pokemon(folium_map, lat, lon, image_url=DEFAULT_IMAGE_URL):
+def get_pokemon(pokemonentity):
+    return f'level:{pokemonentity.level} ' \
+           f'health:{pokemonentity.health} ' \
+           f'strength:{pokemonentity.strength} ' \
+           f'defence:{pokemonentity.defence} ' \
+           f'stamina:{pokemonentity.stamina}'
+
+
+
+def add_pokemon(folium_map, lat, lon, pokemon_title,info, image_url=DEFAULT_IMAGE_URL):
     icon = folium.features.CustomIcon(
         image_url,
         icon_size=(50, 50),
     )
     folium.Marker(
         [lat, lon],
-        # Warning! `tooltip` attribute is disabled intentionally
-        # to fix strange folium cyrillic encoding bug
+        tooltip=pokemon_title,
+        popup=info,
         icon=icon,
     ).add_to(folium_map)
 
@@ -29,8 +38,11 @@ def show_all_pokemons(request):
     folium_map = folium.Map(location=MOSCOW_CENTER, zoom_start=12)
     for pokemon in pokemons:
         add_pokemon(
-            folium_map, pokemon.lat,
+            folium_map,
+            pokemon.lat,
             pokemon.lon,
+            pokemon.pokemon,
+            get_pokemon(pokemon),
             request.build_absolute_uri(pokemon.pokemon.image.url)
         )
     pokemons_on_page = Pokemon.objects.all()
@@ -46,7 +58,8 @@ def show_pokemon(request, pokemon_id):
     for pokemon_entity in PokemonEntity.objects.filter(pokemon_id=pokemon.pk, appeared_at__lte=localtime(),
                                                        disappeared_at__gte=localtime()):
         add_pokemon(
-            folium_map, pokemon_entity.lat,
+            folium_map,
+            pokemon_entity.lat,
             pokemon_entity.lon,
             request.build_absolute_uri(pokemon.image.url)
         )
