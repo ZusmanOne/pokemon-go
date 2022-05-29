@@ -59,20 +59,19 @@
             </div>
           {% endif %}
         </div>
-        {% comment %}
         {% if pokemon.element_type %}
           <hr>
           <div class="mt-4">
             <h4>Стихии покемона</h4>
-            {% for element in pokemon.element_type%}
+            {% for element in element_type%}
               <div>
-                <img class="pull-left mr-2 float-left" style="height:20px;width:20px;" src="{{element.img}}">
-                <p>{{element.title}}, силён против: {{element.strong_against|join:", "}}</p>
+                <img class="pull-left mr-2 float-left" style="height:20px;width:20px;" src="{{element.image.url}}">
+                <p>{{element.title}}, силён против:  {{element.strong_against|join:", "}}</p>
               </div>
             {% endfor %}
           </div>
         {% endif %}
-        {% endcomment %}
+
       </div>
     </div>
 

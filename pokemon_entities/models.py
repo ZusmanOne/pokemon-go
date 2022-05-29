@@ -48,6 +48,8 @@ class PokemonEntity(models.Model):
 
 class PokemonElementType(models.Model):
     title = models.CharField(max_length=100,verbose_name='Стихия')
+    image = models.ImageField(upload_to='image/element_type/%Y/%m', blank=True)
+    strong_against = models.ManyToManyField('self', symmetrical=False,verbose_name='Силен против',blank=True)
 
     class Meta:
         verbose_name = 'Стихия'
